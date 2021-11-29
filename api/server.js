@@ -24,9 +24,47 @@ server.get('/api/users', (req,res) => {
 
 // Get user by Id
 
+server.get('/api/users/:id', async (req, res) => {
+    try{
+        const user = await Users.findById(req.params.id)
+        if (!user) {
+            res.status(404).json({
+                message: `user by id ${req.params.id} does not exist`
+        })}
+        else {
+            res.json(user)
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: 'error getting by id',
+            error: err.message
+        })
+    }
+})
+
 // Post new user
 
+server.post('/api/users', async (req, res) => {
+    try {
+        if (!req.body.name || !req.body.bio) {
+            res.status(400).json({
+                message: 'name and bio required'
+            })
+        } else {
+            const newUser = await Users.insert(req.body)
+            res.status(201).json(newUser)
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: 'error posting new user',
+            error: err.message
+        })
+    }
+})
+
 // Put (update) user by id
+
+
 
 // Delete by id
 
