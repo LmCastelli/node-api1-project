@@ -16,7 +16,7 @@ server.get('/api/users', (req,res) => {
         })
         .catch(err => {
             res.status(500).json({
-                message: 'unable to retrieve users',
+                message: "The users information could not be retrieved",
                 err: err.message
             })
         })
@@ -29,14 +29,14 @@ server.get('/api/users/:id', async (req, res) => {
         const user = await Users.findById(req.params.id)
         if (!user) {
             res.status(404).json({
-                message: `user by id ${req.params.id} does not exist`
+                message: "The user with the specified ID does not exist"
         })}
         else {
             res.json(user)
         }
     } catch (err) {
         res.status(500).json({
-            message: 'error getting by id',
+            message: "The user information could not be retrieved",
             error: err.message
         })
     }
@@ -48,7 +48,7 @@ server.post('/api/users', async (req, res) => {
     try {
         if (!req.body.name || !req.body.bio) {
             res.status(400).json({
-                message: 'name and bio required'
+                message: "Please provide name and bio for the user"
             })
         } else {
             const newUser = await Users.insert(req.body)
@@ -56,7 +56,7 @@ server.post('/api/users', async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({
-            message: 'error posting new user',
+            message: "There was an error while saving the user to the database",
             error: err.message
         })
     }
@@ -68,19 +68,27 @@ server.put('/api/users/:id', async (req, res) => {
     const { id } = req.params
     const { body } = req 
     try {
-        const updated = await Users.update(id, body)
-        if (!updated) {
-            res.status(404).json({
-                message: `user by id ${id} does not exist`
+        
+        if (!req.body.name || !req.body.bio) {
+            res.status(400).json({
+                message: "Please provide name and bio for the user"
             })
         } else {
-            res.json(updated)
+            const updated = await Users.update(id, body)
+            if (!updated) {
+                res.status(404).json({
+                    message: "The user with the specified ID does not exist"
+                })
+            } else {
+                res.status(200).json
+                res.json(updated)
+            }
         }
     } catch (err) {
         res.status(500).json({
-            message: 'error editing user',
+            message: "The user information could not be modified",
             error: err.message
-        })
+         })
     } 
 })
 
@@ -92,7 +100,7 @@ server.delete('/api/users/:id', (req, res) => {
         .then(deletedUser => {
             if (!deletedUser) {
                 res.status(404).json({
-                    message: `user by id ${id} does not exist`
+                    message: "The user with the specified ID does not exist"
                 })
             } else {
                 res.json(deletedUser)
@@ -100,7 +108,7 @@ server.delete('/api/users/:id', (req, res) => {
         })
         .catch(err => {
             res.status(500).json({
-                message: 'error deleting user',
+                message: "The user could not be removed",
                 error: err.message
             })
         })
